@@ -1,0 +1,19 @@
+name: DICOM_Env
+channels:
+  - conda-forge
+  - defaults
+  - bioconda
+  - anaconda
+dependencies:
+  - ca-certificates=2020.10.14=0
+  - certifi=2020.6.20=py37_0
+  - openssl=1.1.1l=h8ffe710_0
+  - pip=20.2.4=py37_0
+  - python=3.7.11=h6244533_0
+  - setuptools=50.3.0=py37h9490d1a_1
+  - sqlite=3.37.0=h8ffe710_0
+  - vc=14.1=h0510ff6_4
+  - vs2015_runtime=14.16.27012=hf0eaf9b_3
+  - wheel=0.35.1=py_0
+  - wincertstore=0.2=py37_0
+prefix: C:\Users\Adarsh\miniconda3\envs\DICOM_Env
