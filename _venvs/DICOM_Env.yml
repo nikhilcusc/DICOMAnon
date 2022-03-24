@@ -16,4 +16,5 @@ dependencies:
   - vs2015_runtime=14.16.27012=hf0eaf9b_3
   - wheel=0.35.1=py_0
   - wincertstore=0.2=py37_0
+  - pydicom
 prefix: C:\Users\Adarsh\miniconda3\envs\DICOM_Env

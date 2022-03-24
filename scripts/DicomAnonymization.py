@@ -34,13 +34,13 @@ if __name__ == "__main__":
     anonymizer.removeTagsByGroup()
 
     anonymizer.saveAnonymizedFile(outputDicomFilePath, log=False)
-
+    # TODO: create output files even if anonymization fails
 
     ### DICOM PUSH ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
     # TODO: Define where change directory happens
-    os.chdir(dcmtkDirectory)
+    #os.chdir(dcmtkDirectory)
 
     connection.cEcho(logFileName)
 

@@ -34,14 +34,14 @@ class Dcmtk:
     def cEcho(self, logFileName):
         # TODO: Make so that this command doesn't lock logFile
         # TODO: Define better structure for log levels
-        self.runByCmdExe(["echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
+        self.runByCmdExe([self.dcmtkDirectory+ "\echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
         # TODO: Use echo errorlevel to assert that we always return 0 (i.e. PACS is connected)
         # runByCmdExe(["echo", "%errorlevel%"])
 
     # C-Store
     def cStore(self, filePath):
         # TODO: Add file output log
-        self.runByCmdExe(["storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
+        self.runByCmdExe([self.dcmtkDirectory+ "\storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
 
     def readHelpFunction(self, command):
         os.chdir(self.dcmtkDirectory)
