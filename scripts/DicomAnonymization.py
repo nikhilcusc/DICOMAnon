@@ -1,6 +1,7 @@
 import os
 from pydicom import dcmread
 import sys
+import logging
 
 scriptDirectory = os.path.dirname(os.path.realpath(__file__))
 parentDirectory = os.path.dirname(scriptDirectory)
@@ -22,7 +23,7 @@ if __name__ == "__main__":
     outputDicomFilePath = inputDicomFileDirectory + "\output.dcm"
 
     dcmtkDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', r'dcmtk-3.6.6-win64-dynamic\bin'))
-
+    logging.basicConfig(filename='anonymizer.log', level=logging.DEBUG)
     ### Anonymization ###
 
     anonymizer = Anonymizer()
@@ -32,23 +33,20 @@ if __name__ == "__main__":
     anonymizer.removePrivateTags()
 
     anonymizer.removeTagsByGroup()
+    logging.debug('Anonymization complete!')
 
     anonymizer.saveAnonymizedFile(outputDicomFilePath, log=False)
-    # TODO: create output files even if anonymization fails
+    logging.info('Anonymized DICOM saved')
+    # TODO: creates output files even if anonymization fails, we should have a check before saving output dicom
 
     ### DICOM PUSH ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
-    # TODO: Define where change directory happens
-    #os.chdir(dcmtkDirectory)
-
     connection.cEcho(logFileName)
-
+    
     connection.cStore(inputDicomFilePath)
-
+    logging.info('Unanonymized DICOM pushed to PACS')
     connection.cStore(outputDicomFilePath)
-
-    # TODO: Define how we return to script directory
-    os.chdir(scriptDirectory)
+    logging.info('Anonymized pushed to PACS')
 
 

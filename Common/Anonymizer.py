@@ -1,4 +1,5 @@
 from pydicom import dcmread
+import logging
 
 # TODO: Add doxygen comments for everything
 class Anonymizer:
@@ -23,11 +24,13 @@ class Anonymizer:
     # Remove any private tags not part of DICOM Standard
     def removePrivateTags(self):
         # TODO: Add error handling for when dataset is None
+        logging.debug('Removing private tags!')
         self.dataset.remove_private_tags()
 
     # Iterating through elements in dataset
     # Delete elements who have tags present in anonymizedTagArray
     def removeTagsByGroup(self):
+        logging.debug('Removing tags by group!')
         self.dataset.walk(self.deleteByTagGroupCallback)
 
     # Delete elements according to Value Representation (may be useful)
