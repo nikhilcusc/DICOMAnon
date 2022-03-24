@@ -1,5 +1,20 @@
+# Copyright 2022
+# All rights reserved
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+# persons to whom the Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+# the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 import os
-from pydicom import dcmread
 import sys
 
 scriptDirectory = os.path.dirname(os.path.realpath(__file__))
@@ -12,43 +27,60 @@ from Common.Dcmtk import Dcmtk
 # Output files
 logFileName = "\log.txt"
 
+# Boolean defines whether input dicom images will be uploaded along with anonymized dicom files
+uploadInputFiles = True
+
 if __name__ == "__main__":
 
-    ### SET DIRECTORY PATHS ###
+    ### Set directory paths for input and anonymization DICOM files ###
 
-    inputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders'))
-    inputDicomFilePath = inputDicomFileDirectory + "\image01.dcm"
+    inputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\InputFiles'))
+    outputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\AnonymizedFiles'))
 
-    outputDicomFilePath = inputDicomFileDirectory + "\output.dcm"
-
+    ### Set directory path for dcmtk library ###
     dcmtkDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', r'dcmtk-3.6.6-win64-dynamic\bin'))
 
-    ### Anonymization ###
+    ### Anonymization of input files ###
 
     anonymizer = Anonymizer()
 
-    anonymizer.readDicomFile(inputDicomFilePath, log=False)
+    # iterate over files in inputDicomFileDirectory, anonymize those files, and save them in outputDicomFileDirectory
+    for filename in os.listdir(inputDicomFileDirectory):
 
-    anonymizer.removePrivateTags()
+        # Get file paths to input and output locations
+        inputDicomFilePath = os.path.join(inputDicomFileDirectory, filename)
+        outputDicomFilePath = os.path.join(outputDicomFileDirectory, filename)
 
-    anonymizer.removeTagsByGroup()
+        # Read DICOM File (stored in anonymizer class as self.dataset)
+        anonymizer.readDicomFile(inputDicomFilePath, log=False)
 
-    anonymizer.saveAnonymizedFile(outputDicomFilePath, log=False)
+        # Remove private tags from DICOM file
+        anonymizer.removePrivateTags()
+
+        # Remove group tags based on anonymization class
+        anonymizer.removeTagsByGroup()
+
+        # Save anonymized files to output location
+        anonymizer.saveAnonymizedFile(outputDicomFilePath, log=False)
 
 
-    ### DICOM PUSH ###
+    ### Push output files to Orthanc Server ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
     # TODO: Define where change directory happens
+    # Change directory to dcmtk library (required to run PACS commands)
     os.chdir(dcmtkDirectory)
 
+    # Check connection with Orthanc Server is secure
     connection.cEcho(logFileName)
 
-    connection.cStore(inputDicomFilePath)
+    # Upload input DICOM files to Orthanc as point of comparison if user desires it
+    if uploadInputFiles:
+        connection.cStore(inputDicomFileDirectory, individualFile=False)
 
-    connection.cStore(outputDicomFilePath)
+    # Upload output anonymized DICOM files to Orthanc
+    connection.cStore(outputDicomFileDirectory, individualFile=False)
 
     # TODO: Define how we return to script directory
+    # Change directory back to script directory
     os.chdir(scriptDirectory)
-
-

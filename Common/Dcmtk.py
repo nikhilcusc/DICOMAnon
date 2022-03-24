@@ -1,21 +1,52 @@
+# Copyright 2022
+# All rights reserved
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit
+# persons to whom the Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+# the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+# WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+# OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 import os
 import subprocess
 
-# TODO: Add doxygen comments for everything
 class Dcmtk:
+    """
+    Base class for communication with PACS Server (Orthanc)
+    """
     def __init__(self, scriptDirectory, dcmtkDirectory, peer, port):
+        # Directory where main .py file is run from
         self.scriptDirectory = scriptDirectory
+
+        # Directory where dcmtk library exists
         self.dcmtkDirectory = dcmtkDirectory
+
+        # IP address on machine for Orthanc Server
         self.peer = peer
+
+        # Port number on machine for Orthanc Server
         self.port = port
+
 
     def runByCmdExe(self, command):
         """
-        Opens windows cmd terminal, runs command on command line and returns
-        :param command: list
-            List of strings that will be put into command line interface
-        :return:
-        TODO: Add handling for stdout
+        Runs any command on command line based on passed in parameters
+
+        Parameters
+        __________
+        command: arr
+            Array of strings that are joined together before being executed on command line
+
+        Returns
+        _______
+        None
         """
         try:
             commandPrompt = subprocess.Popen(
@@ -30,24 +61,64 @@ class Dcmtk:
                 "ERROR: Failed to execute " + str(command) + "Exception: " + e
             )
 
-    # Send CEcho command
+
     def cEcho(self, logFileName):
+        """
+        Sends C-ECHO command to assert connection with PACS Server
+
+        Parameters
+        __________
+        logFileName: file
+            Path to log file which stores output from executed command line
+
+        Returns
+        _______
+        None
+        """
         # TODO: Make so that this command doesn't lock logFile
         # TODO: Define better structure for log levels
         self.runByCmdExe(["echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
         # TODO: Use echo errorlevel to assert that we always return 0 (i.e. PACS is connected)
         # runByCmdExe(["echo", "%errorlevel%"])
 
-    # C-Store
-    def cStore(self, filePath):
+
+    def cStore(self, filePath, individualFile = True):
+        """
+        Sends C-STORE command to upload file/s into PACS Server
+
+        Parameters
+        __________
+        filePath: file
+            Path to input DICOM file or file directory which is to be uploaded into PACS Server
+
+        individualFile: bool
+            True means filePath is individualFile. False means filePath is file directory containing many .dcm
+
+        Returns
+        _______
+        None
+        """
         # TODO: Add file output log
-        self.runByCmdExe(["storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
+        if individualFile:
+            self.runByCmdExe(["storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
+        else:
+            self.runByCmdExe(
+                ["storescu", self.peer, self.port, filePath, "+sd", "-xs", "--propose-lossless", "-ll", "info"])
+
 
     def readHelpFunction(self, command):
-        os.chdir(self.dcmtkDirectory)
-        # TODO: Add functionality to read help files for all 4 commands (echoscu, storescu, storescp, dcmdump)
-        # runByCmdExe(["echoscu", "-h"])
-        print(command)
-        os.chdir(self.scriptDirectory)
+        """
+        Sends command to get help information for provided command and display on command line
+
+        Parameters
+        __________
+        command: str
+            Command that user wants information on
+
+        Returns
+        _______
+        None
+        """
+        self.runByCmdExe([command, "-h"])
 
 

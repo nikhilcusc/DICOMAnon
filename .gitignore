@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Output Anonymized Files
+/ImageHeaders/AnonymizedFiles
+
 # C extensions
 *.so
 
