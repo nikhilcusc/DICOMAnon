@@ -77,7 +77,7 @@ class Dcmtk:
         """
         # TODO: Make so that this command doesn't lock logFile
         # TODO: Define better structure for log levels
-        self.runByCmdExe(["echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
+        self.runByCmdExe([self.dcmtkDirectory + "echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
         # TODO: Use echo errorlevel to assert that we always return 0 (i.e. PACS is connected)
         # runByCmdExe(["echo", "%errorlevel%"])
 
@@ -100,7 +100,7 @@ class Dcmtk:
         """
         # TODO: Add file output log
         if individualFile:
-            self.runByCmdExe(["storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
+            self.runByCmdExe([self.dcmtkDirectory + "storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
         else:
             self.runByCmdExe(
                 ["storescu", self.peer, self.port, filePath, "+sd", "-xs", "--propose-lossless", "-ll", "info"])
@@ -119,6 +119,6 @@ class Dcmtk:
         _______
         None
         """
-        self.runByCmdExe([command, "-h"])
+        self.runByCmdExe([self.dcmtkDirectory + command, "-h"])
 
 

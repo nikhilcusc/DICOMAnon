@@ -68,10 +68,6 @@ if __name__ == "__main__":
     ### Push output files to Orthanc Server ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
-    # TODO: Define where change directory happens
-    # Change directory to dcmtk library (required to run PACS commands)
-    os.chdir(dcmtkDirectory)
-
     # Check connection with Orthanc Server is secure
     connection.cEcho(logFileName)
 
@@ -81,7 +77,3 @@ if __name__ == "__main__":
 
     # Upload output anonymized DICOM files to Orthanc
     connection.cStore(outputDicomFileDirectory, individualFile=False)
-
-    # TODO: Define how we return to script directory
-    # Change directory back to script directory
-    os.chdir(scriptDirectory)
