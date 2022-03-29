@@ -16,6 +16,7 @@
 
 import os
 import subprocess
+import logging
 
 class Dcmtk:
     """
@@ -55,11 +56,15 @@ class Dcmtk:
             commandPrompt.stdin.write(
                 "{}\n".format(" ".join(command) + "\n").encode("utf-8")
             )
+            
             commandPrompt.stdin.close()
+            output, unused_error = commandPrompt.communicate()
+            logging.debug('cmd output is ' + str(output) + '\n unused error is ' + str(unused_error))
         except Exception as e:
             raise Exception(
                 "ERROR: Failed to execute " + str(command) + "Exception: " + e
             )
+         
 
 
     def cEcho(self, logFileName):
@@ -77,7 +82,7 @@ class Dcmtk:
         """
         # TODO: Make so that this command doesn't lock logFile
         # TODO: Define better structure for log levels
-        self.runByCmdExe([self.dcmtkDirectory + "echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
+        self.runByCmdExe([self.dcmtkDirectory + "\echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
         # TODO: Use echo errorlevel to assert that we always return 0 (i.e. PACS is connected)
         # runByCmdExe(["echo", "%errorlevel%"])
 
@@ -100,10 +105,10 @@ class Dcmtk:
         """
         # TODO: Add file output log
         if individualFile:
-            self.runByCmdExe([self.dcmtkDirectory + "storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
+            self.runByCmdExe([self.dcmtkDirectory + "\storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
         else:
             self.runByCmdExe(
-                ["storescu", self.peer, self.port, filePath, "+sd", "-xs", "--propose-lossless", "-ll", "info"])
+                [self.dcmtkDirectory + "\storescu", self.peer, self.port, filePath, "+sd", "-xs", "--propose-lossless", "-ll", "info"])
 
 
     def readHelpFunction(self, command):

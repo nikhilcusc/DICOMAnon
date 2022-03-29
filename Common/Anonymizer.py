@@ -15,6 +15,7 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 from pydicom import dcmread
+import logging
 
 class Anonymizer:
     """
@@ -50,7 +51,7 @@ class Anonymizer:
             A dictionary structure representing a parsed DICOM file
         """
         self.dataset = dcmread(inputFilePath)
-        logging.debug('Reeading DICOM files.')
+        logging.info('Reading DICOM files.')
         return self.dataset
 
 
@@ -72,7 +73,7 @@ class Anonymizer:
         None
         """
         # Save new anonymized file
-        logging.debug('Saving Anonymized file.')
+        logging.info('Saving Anonymized file.')
         self.dataset.save_as(outputFilePath)
 
 

@@ -16,6 +16,7 @@
 
 import os
 import sys
+import logging 
 
 scriptDirectory = os.path.dirname(os.path.realpath(__file__))
 parentDirectory = os.path.dirname(scriptDirectory)
@@ -28,7 +29,7 @@ from Common.Dcmtk import Dcmtk
 logFileName = 'anonymizer.log'
 
 # Boolean defines whether input dicom images will be uploaded along with anonymized dicom files
-uploadInputFiles = True
+uploadInputFiles = False
 
 if __name__ == "__main__":
 
@@ -73,7 +74,7 @@ if __name__ == "__main__":
 
     # Upload input DICOM files to Orthanc as point of comparison if user desires it
     if uploadInputFiles:
-        connection.cStore(inputDicomFileDirectory, individualFile=False)
+        connection.cStore(inputDicomFileDirectory, individualFile=True)
 
     # Upload output anonymized DICOM files to Orthanc
-    connection.cStore(outputDicomFileDirectory, individualFile=False)
+    #connection.cStore(outputDicomFileDirectory, individualFile=False)
