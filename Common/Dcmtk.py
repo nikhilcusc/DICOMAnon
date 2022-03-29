@@ -51,15 +51,23 @@ class Dcmtk:
         """
         try:
             commandPrompt = subprocess.Popen(
-                "cmd.exe", stdin=subprocess.PIPE, bufsize=0
+                "cmd.exe", stdin=subprocess.PIPE, bufsize=0,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
             )
             commandPrompt.stdin.write(
                 "{}\n".format(" ".join(command) + "\n").encode("utf-8")
             )
             
-            commandPrompt.stdin.close()
+            
             output, unused_error = commandPrompt.communicate()
-            logging.debug('cmd output is ' + str(output) + '\n unused error is ' + str(unused_error))
+            logging.debug('cmd output is ' + str(output) + '\n\n unused error is ' + str(unused_error))
+            if 'Error' in str(output):
+                logging.error("ERROR: Failed to execute " + str(command))
+                
+            commandPrompt.stdin.close()
+            commandPrompt.stdout.close()
+            commandPrompt.stderr.close()
         except Exception as e:
             raise Exception(
                 "ERROR: Failed to execute " + str(command) + "Exception: " + e

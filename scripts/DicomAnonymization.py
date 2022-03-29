@@ -77,4 +77,4 @@ if __name__ == "__main__":
         connection.cStore(inputDicomFileDirectory, individualFile=True)
 
     # Upload output anonymized DICOM files to Orthanc
-    #connection.cStore(outputDicomFileDirectory, individualFile=False)
+    connection.cStore(outputDicomFileDirectory, individualFile=False)
