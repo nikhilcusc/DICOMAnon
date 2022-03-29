@@ -50,12 +50,12 @@ class Anonymizer:
             A dictionary structure representing a parsed DICOM file
         """
         self.dataset = dcmread(inputFilePath)
-        if log:
-            print(self.dataset)
+        logging.debug('Reeading DICOM files.')
         return self.dataset
 
 
     def saveAnonymizedFile(self, outputFilePath, log=False):
+
         """
         Saves DICOM File to file location
 
@@ -71,8 +71,8 @@ class Anonymizer:
         _______
         None
         """
-        if log:
-            print(self.dataset)
+        # Save new anonymized file
+        logging.debug('Saving Anonymized file.')
         self.dataset.save_as(outputFilePath)
 
 

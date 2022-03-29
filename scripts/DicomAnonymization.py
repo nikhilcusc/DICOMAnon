@@ -25,7 +25,7 @@ from Common.Anonymizer import Anonymizer
 from Common.Dcmtk import Dcmtk
 
 # Output files
-logFileName = "\log.txt"
+logFileName = 'anonymizer.log'
 
 # Boolean defines whether input dicom images will be uploaded along with anonymized dicom files
 uploadInputFiles = True
@@ -41,6 +41,7 @@ if __name__ == "__main__":
     dcmtkDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', r'dcmtk-3.6.6-win64-dynamic\bin'))
 
     ### Anonymization of input files ###
+    logging.basicConfig(filename=logFileName, level=logging.DEBUG)
 
     anonymizer = Anonymizer()
 
