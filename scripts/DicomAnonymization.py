@@ -16,6 +16,7 @@
 
 import os
 import sys
+import logging
 
 scriptDirectory = os.path.dirname(os.path.realpath(__file__))
 parentDirectory = os.path.dirname(scriptDirectory)
@@ -25,7 +26,7 @@ from Common.Anonymizer import Anonymizer
 from Common.Dcmtk import Dcmtk
 
 # Output files
-logFileName = "\log.txt"
+logFileName = 'anonymizer.log'
 
 # Boolean defines whether input dicom images will be uploaded along with anonymized dicom files
 uploadInputFiles = True
@@ -41,6 +42,7 @@ if __name__ == "__main__":
     dcmtkDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', r'dcmtk-3.6.6-win64-dynamic\bin'))
 
     ### Anonymization of input files ###
+    logging.basicConfig(filename=logFileName, level=logging.DEBUG)
 
     anonymizer = Anonymizer()
 
@@ -52,24 +54,19 @@ if __name__ == "__main__":
         outputDicomFilePath = os.path.join(outputDicomFileDirectory, filename)
 
         # Read DICOM File (stored in anonymizer class as self.dataset)
-        anonymizer.readDicomFile(inputDicomFilePath, log=False)
+        anonymizer.readDicomFile(inputDicomFilePath)
 
         # Remove private tags from DICOM file
         anonymizer.removePrivateTags()
 
-        # Remove group tags based on anonymization class
-        anonymizer.removeTagsByGroup()
+        # Remove/modify tags based on DicomTags class
+        anonymizer.anonymizeTags()
 
         # Save anonymized files to output location
-        anonymizer.saveAnonymizedFile(outputDicomFilePath, log=False)
-
+        anonymizer.saveAnonymizedFile(outputDicomFilePath)
 
     ### Push output files to Orthanc Server ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
-
-    # TODO: Define where change directory happens
-    # Change directory to dcmtk library (required to run PACS commands)
-    os.chdir(dcmtkDirectory)
 
     # Check connection with Orthanc Server is secure
     connection.cEcho(logFileName)
@@ -80,7 +77,3 @@ if __name__ == "__main__":
 
     # Upload output anonymized DICOM files to Orthanc
     connection.cStore(outputDicomFileDirectory, individualFile=False)
-
-    # TODO: Define how we return to script directory
-    # Change directory back to script directory
-    os.chdir(scriptDirectory)

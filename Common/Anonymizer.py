@@ -14,25 +14,88 @@
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import os
+import sys
+
+scriptDirectory = os.path.dirname(os.path.realpath(__file__))
+parentDirectory = os.path.dirname(scriptDirectory)
+sys.path.append(parentDirectory)
+
 from pydicom import dcmread
+import logging
+from Common.DicomTags import DicomTags
+
 
 class Anonymizer:
     """
     Base class for anonymization of DICOM Files
     """
     def __init__(self):
-        # Array of DICOM Tags that need to be anonymized
-        # TODO: Adding 0x8  causes problems due to minimal set for DICOM image (0x8, 0x15)
-        self.anonymizedTagArray = [0x10]
-
-        # Array of DICOM Values that need to be anonymized
-        self.anonymizedValueArray = ["PN"]
 
         # Individual DICOM dataset to be anonymized
         self.dataset = None
 
+        # DICOM Tag Object containing dictionary structures
+        self.dicomTagObject = DicomTags()
 
-    def readDicomFile(self, inputFilePath, log=False):
+
+    def _deleteTagCallback(self, dataset, dataElement):
+        """
+        Internal callback function to delete a given dataset's elements if it belongs to the deleteTagArray
+
+        Returns
+        _______
+        None
+        """
+
+        # Get tags that should be deleted
+        deletedTagArray = (self.dicomTagObject.getDeleteTagArray())
+
+        # Delete tags if they are in array
+        if dataElement.tag in deletedTagArray:
+            logging.debug("The following tag has been deleted ----> " + str(dataset[dataElement.tag]))
+            del dataset[dataElement.tag]
+
+
+    def _dummyTagCallback(self, dataset, dataElement):
+        """
+        Internal callback function to set a given dataset's elements to a dummy value if it belongs to the deleteTagArray
+
+        Returns
+        _______
+        None
+        """
+
+        # Get tags that need to be replaced with dummy value
+        dummyTagArray = (self.dicomTagObject.getDummyTagArray())
+
+        # Replace tags if they are in array
+        if dataElement.tag in dummyTagArray:
+            logging.debug("The following tag has been replaced----> " + str(dataset[dataElement.tag]))
+            # Check if tags should be replaced with an integer value or 'None' string
+            if dataElement.VR in self.dicomTagObject.integerVrKeys:
+                dataElement.value = 0
+            else:
+                dataElement.value = "None"
+
+
+    def anonymizeTags(self):
+        """
+        Used to delete and set dummy values for all relevant DICOM tags
+
+        Returns
+        _______
+        None
+        """
+
+        # Walk through DICOM dataset and delete appropriate tags
+        self.dataset.walk(self._deleteTagCallback)
+
+        # Walk through DICOM dataset and set appropriate tags to dummy value
+        self.dataset.walk(self._dummyTagCallback)
+
+
+    def readDicomFile(self, inputFilePath):
         """
         Reads input DICOM File and returns a dictionary of DICOM tags
 
@@ -41,21 +104,17 @@ class Anonymizer:
         inputFilePath: str
             Path to individual .dcm DICOM file
 
-        log: bool
-            Prints to command line as debug tool
-
         Returns
         _______
         dataset: FileDataSet
             A dictionary structure representing a parsed DICOM file
         """
         self.dataset = dcmread(inputFilePath)
-        if log:
-            print(self.dataset)
+        logging.info('Reading DICOM files')
         return self.dataset
 
 
-    def saveAnonymizedFile(self, outputFilePath, log=False):
+    def saveAnonymizedFile(self, outputFilePath):
         """
         Saves DICOM File to file location
 
@@ -64,15 +123,14 @@ class Anonymizer:
         outputFilePath: str
             Path to output .dcm DICOM file
 
-        log: bool
-            Prints to command line as debug tool
-
         Returns
         _______
         None
         """
-        if log:
-            print(self.dataset)
+        logging.info('Saving DICOM file')
+        if self.dataset is None:
+            raise ValueError('Must call readDicomFile before attempting to save dicom file')
+
         self.dataset.save_as(outputFilePath)
 
 
@@ -88,60 +146,8 @@ class Anonymizer:
         _______
         None
         """
-        # TODO: Add error handling for when dataset is None
+        logging.info('Removing DICOM file private tags')
+        if self.dataset is None:
+            raise ValueError('Must call readDicomFile before attempting to remove private tags')
+
         self.dataset.remove_private_tags()
-
-
-    def removeTagsByGroup(self):
-        """
-        Removes any DICOM tags from DICOM file based on group value
-
-        Parameters
-        __________
-        None
-
-        Returns
-        _______
-        None
-        """
-        self.dataset.walk(self.deleteByTagGroupCallback)
-
-
-    def deleteByTagGroupCallback(self, dataset, dataElement):
-        """
-        Iterates through elements in dataset and removes elements who have a tag group present in anonymizedTagArray
-
-        Parameters
-        __________
-        dataset: FileDataSet
-            A dictionary structure representing a parsed DICOM file
-
-        data_element: DcmElement
-            Data element within DICOM file
-
-        Returns
-        _______
-        None
-        """
-        if dataElement.tag.group in self.anonymizedTagArray:
-            del dataset[dataElement.tag]
-
-
-    # TODO: Determine if this function is necessary
-    # Delete elements according to Value Representation (may be useful)
-    # https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_6.2.html
-    def deleteByValueRepresentationCallback(self, dataset, data_element):
-        """
-        Call-back function that removes
-
-        Parameters
-        __________
-        None
-
-        Returns
-        _______
-        None
-        """
-        # Potentially useless if we are deleting by tags anyway
-        if data_element.VR == "PN":
-            data_element.value = "anonymous"
