@@ -70,11 +70,14 @@ if __name__ == "__main__":
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
     # Check connection with Orthanc Server is secure
-    connection.cEcho(logFileName)
+    runStatus = connection.cEcho(logFileName)
+    logging.debug('cEcho run status ' + str(runStatus)) 
+    if runStatus==0:
+        print('Could not connect to Orthanc server')
+    else:
+        # Upload input DICOM files to Orthanc as point of comparison if user desires it
+        if uploadInputFiles:
+            runStatus = connection.cStore(inputDicomFileDirectory, individualFile=False)
 
-    # Upload input DICOM files to Orthanc as point of comparison if user desires it
-    if uploadInputFiles:
-        connection.cStore(inputDicomFileDirectory, individualFile=True)
-
-    # Upload output anonymized DICOM files to Orthanc
-    connection.cStore(outputDicomFileDirectory, individualFile=False)
+        # Upload output anonymized DICOM files to Orthanc
+        runStatus = connection.cStore(outputDicomFileDirectory, individualFile=False)
