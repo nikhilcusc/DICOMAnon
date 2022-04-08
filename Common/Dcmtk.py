@@ -58,7 +58,7 @@ class Dcmtk:
             commandPrompt.stdin.write(
                 "{}\n".format(" ".join(command) + "\n").encode("utf-8")
             )
-
+            
             output, unused_error = commandPrompt.communicate()
             #logging.debug('cmd output is ' + str(output) + '\n\n unused error is ' + str(unused_error))
             if ('Error' or 'Failed') in str(output):
