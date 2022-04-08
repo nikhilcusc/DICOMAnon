@@ -28,8 +28,23 @@ from Common.Dcmtk import Dcmtk
 # Output files
 logFileName = 'anonymizer.log'
 
-# Boolean defines whether input dicom images will be uploaded along with anonymized dicom files
-uploadInputFiles = True
+# Boolean defines whether input dicom images will be uploaded
+# DEMO ONLY
+uploadInputFiles = False
+
+# Boolean defines whether anonymized dicom images will be uploaded
+uploadAnonymizedFiles = True
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 if __name__ == "__main__":
 
@@ -65,15 +80,30 @@ if __name__ == "__main__":
         # Save anonymized files to output location
         anonymizer.saveAnonymizedFile(outputDicomFilePath)
 
+    print("All files in Input DICOM Directory have been anonymized")
+
     ### Push output files to Orthanc Server ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
     # Check connection with Orthanc Server is secure
-    connection.cEcho(logFileName)
+    runStatus = connection.cEcho(logFileName)
+    logging.debug('cEcho run status ' + str(runStatus))
+    if runStatus == 0:
+        print('FATAL ERROR: Could not connect to Orthanc server')
+    else:
+        print("Orthanc Connection is successful")
+        # Upload input DICOM files to Orthanc as point of comparison if user desires it
+        if uploadInputFiles:
+            runStatus = connection.cStore(inputDicomFileDirectory, individualFile=False)
+            if runStatus == 0:
+                print('FATAL ERROR: Could not store input images in Orthanc server')
+            else:
+                print("Input images pushed to Orthanc server")
 
-    # Upload input DICOM files to Orthanc as point of comparison if user desires it
-    if uploadInputFiles:
-        connection.cStore(inputDicomFileDirectory, individualFile=False)
-
-    # Upload output anonymized DICOM files to Orthanc
-    connection.cStore(outputDicomFileDirectory, individualFile=False)
+        if uploadAnonymizedFiles:
+            # Upload output anonymized DICOM files to Orthanc
+            runStatus = connection.cStore(outputDicomFileDirectory, individualFile=False)
+            if runStatus == 0:
+                print('FATAL ERROR: Could not store anonymized images in Orthanc server')
+            else:
+                print("Anonymized images pushed to Orthanc server")

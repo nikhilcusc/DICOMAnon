@@ -46,8 +46,9 @@ class Dcmtk:
 
         Returns
         _______
-        None
+        runStatus
         """
+        runStatus=1
         try:
             commandPrompt = subprocess.Popen(
                 "cmd.exe", stdin=subprocess.PIPE, bufsize=0,
@@ -59,18 +60,20 @@ class Dcmtk:
             )
 
             output, unused_error = commandPrompt.communicate()
-            logging.debug('cmd output is ' + str(output) + '\n\n unused error is ' + str(unused_error))
-            if 'Error' in str(output):
-                logging.error("ERROR: Failed to execute " + str(command))
-
-            commandPrompt.stdin.close()
-            commandPrompt.stdout.close()
-            commandPrompt.stderr.close()
+            #logging.debug('cmd output is ' + str(output) + '\n\n unused error is ' + str(unused_error))
+            if ('Error' or 'Failed') in str(output):
+                #logging.error("ERROR: Failed to execute " + str(command))
+                raise Exception('Failed to execute command')
 
         except Exception as e:
-            raise Exception(
-                "ERROR: Failed to execute " + str(command) + "Exception: " + e
-            )
+            logging.error("ERROR: Failed to execute " + str(command))
+            #raise Exception("ERROR: Failed to execute " + str(command) + "Exception: " + e)
+            runStatus=0
+
+        commandPrompt.stdin.close()
+        commandPrompt.stdout.close()
+        commandPrompt.stderr.close()
+        return runStatus
 
 
     def cEcho(self, logFileName):
@@ -84,13 +87,9 @@ class Dcmtk:
 
         Returns
         _______
-        None
+        runStatus
         """
-        # TODO: Make so that this command doesn't lock logFile
-        # TODO: Define better structure for log levels
-        self.runByCmdExe([self.dcmtkDirectory + "\echoscu", self.peer, self.port, "-ll", "debug", ">", self.scriptDirectory + logFileName])
-        # TODO: Use echo errorlevel to assert that we always return 0 (i.e. PACS is connected)
-        # runByCmdExe(["echo", "%errorlevel%"])
+        return self.runByCmdExe([self.dcmtkDirectory + "\echoscu", self.peer, self.port])
 
 
     def cStore(self, filePath, individualFile=True):
@@ -107,13 +106,12 @@ class Dcmtk:
 
         Returns
         _______
-        None
+        runStatus
         """
-        # TODO: Add file output log
         if individualFile:
-            self.runByCmdExe([self.dcmtkDirectory + "\storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
+            return self.runByCmdExe([self.dcmtkDirectory + "\storescu", self.peer, self.port, filePath, "-xs", "--propose-lossless", "-ll", "info"])
         else:
-            self.runByCmdExe(
+            return self.runByCmdExe(
                 [self.dcmtkDirectory + "\storescu", self.peer, self.port, filePath, "+sd", "-xs", "--propose-lossless", "-ll", "info"])
 
 
