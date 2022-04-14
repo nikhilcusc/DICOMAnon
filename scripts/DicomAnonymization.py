@@ -37,17 +37,44 @@ uploadAnonymizedFiles = True
 
 if __name__ == "__main__":
 
-    ### Set directory paths for input and anonymization DICOM files ###
+    ### Set directory paths for input, anonymization and downloaded DICOM files ###
 
     inputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\InputFiles'))
     outputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\AnonymizedFiles'))
-
+    downloadedDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\DownloadedFiles'))
+        
     ### Set directory path for dcmtk library ###
     dcmtkDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', r'dcmtk-3.6.6-win64-dynamic\bin'))
 
     ### Anonymization of input files ###
     logging.basicConfig(filename=logFileName, level=logging.DEBUG)
 
+    ### Upload files to Orthanc server ###
+    connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
+
+    # Check connection with Orthanc Server is secure
+    runStatus = connection.cEcho()
+    logging.debug('cEcho run status ' + str(runStatus))
+    if runStatus == 0:
+        print('FATAL ERROR: Could not connect to Orthanc server')
+    else:
+        print("Orthanc Connection is successful")
+        # Upload input DICOM files to Orthanc
+        runStatus = connection.cStore(inputDicomFileDirectory, individualFile=False)
+        if runStatus == 0:
+            print('FATAL ERROR: Could not store input images in Orthanc server')
+        else:
+            print("Input images pushed to Orthanc server")
+
+    ### DICOM Query/Retrieve ###
+    patientID = 626457
+    runStatus = connection.cGet(patientID, downloadedDicomFileDirectory)
+    if runStatus == 0:
+        print('FATAL ERROR: Could not download images from the Orthanc server')
+    else:
+        print("Input images downloaded from Orthanc server and saved in "+ downloadedDicomFileDirectory)
+    inputDicomFileDirectory = downloadedDicomFileDirectory
+    
     anonymizer = Anonymizer()
 
     # iterate over files in inputDicomFileDirectory, anonymize those files, and save them in outputDicomFileDirectory
@@ -75,7 +102,7 @@ if __name__ == "__main__":
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
     # Check connection with Orthanc Server is secure
-    runStatus = connection.cEcho(logFileName)
+    runStatus = connection.cEcho()
     logging.debug('cEcho run status ' + str(runStatus))
     if runStatus == 0:
         print('FATAL ERROR: Could not connect to Orthanc server')

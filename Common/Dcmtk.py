@@ -55,6 +55,7 @@ class Dcmtk:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
+
             commandPrompt.stdin.write(
                 "{}\n".format(" ".join(command) + "\n").encode("utf-8")
             )
@@ -76,15 +77,13 @@ class Dcmtk:
         return runStatus
 
 
-    def cEcho(self, logFileName):
+    def cEcho(self):
         """
         Sends C-ECHO command to assert connection with PACS Server
 
         Parameters
         __________
-        logFileName: file
-            Path to log file which stores output from executed command line
-
+       
         Returns
         _______
         runStatus
@@ -131,3 +130,17 @@ class Dcmtk:
         self.runByCmdExe([self.dcmtkDirectory + command, "-h"])
 
 
+    def cGet(self, patientID, outputDir):
+        """
+        Sends C-GET command to retrieve file/s from PACS Server
+
+        Parameters
+        __________
+        outputDir: string
+            Path to location where DICOM files are to be downloaded
+
+        Returns
+        _______
+        runStatus
+        """
+        return self.runByCmdExe([self.dcmtkDirectory + "\getscu", self.peer, self.port, '-aec ORTHANC', '-k "0008,0052=PATIENT"', '-k "0010,0020='+ str(patientID) + '"',  '-od', outputDir + '\\'])
