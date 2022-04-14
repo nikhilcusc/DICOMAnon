@@ -24,6 +24,7 @@ sys.path.append(parentDirectory)
 
 from Common.Anonymizer import Anonymizer
 from Common.Dcmtk import Dcmtk
+from Common.AddDcmExt import addDCMextension
 
 # Output files
 logFileName = 'anonymizer.log'
@@ -73,6 +74,11 @@ if __name__ == "__main__":
         print('FATAL ERROR: Could not download images from the Orthanc server')
     else:
         print("Input images downloaded from Orthanc server and saved in "+ downloadedDicomFileDirectory)
+    
+    # add dcm extension to all downloaded files
+    addDCMextension(downloadedDicomFileDirectory)
+    
+    # change inputDicomFileDirectory to just downloaded files' directory 
     inputDicomFileDirectory = downloadedDicomFileDirectory
     
     anonymizer = Anonymizer()
