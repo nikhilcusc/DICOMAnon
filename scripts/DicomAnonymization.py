@@ -68,10 +68,10 @@ if __name__ == "__main__":
             print("Input images pushed to Orthanc server")
 
     ### DICOM Query/Retrieve ###
-    patientID = 626457
+    patientID = 11111
     runStatus = connection.cGet(patientID, downloadedDicomFileDirectory)
     if runStatus == 0:
-        print('FATAL ERROR: Could not download images from the Orthanc server')
+        print('FATAL ERROR: Could not download images from the Orthanc server. One of the possible reasons could be incorrect  patientID')
     else:
         print("Input images downloaded from Orthanc server and saved in "+ downloadedDicomFileDirectory)
     

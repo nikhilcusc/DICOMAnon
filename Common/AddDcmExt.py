@@ -7,7 +7,10 @@ def addDCMextension(directory):
     logging.debug('Adding extension to files in ' + directory)
     for file in os.listdir(directory):
         head, tail = os.path.splitext(file)
-        if re.search("[0-9]{5,}",tail[1:]).start()==0: # if the last part of file name starts with numbers
+        fileNameTail = re.search("[0-9]{5,}",tail[1:])
+        if fileNameTail==None:
+            continue
+        if fileNameTail.start()==0: # if the last part of file name starts with numbers
             src = os.path.join(directory, file)
             dst = os.path.join(directory, file + '.dcm')
             
