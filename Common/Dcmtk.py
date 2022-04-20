@@ -61,8 +61,10 @@ class Dcmtk:
             )
             
             output, unused_error = commandPrompt.communicate()
-            #logging.debug('\n\ncmd output is ' + str(output))
-            if ('Error') in str(output) or ('Failed') in str(output):
+            output = str(output)
+            logging.debug('\n\ncmd output is ' + output)
+            fCount = output.count('Failed')
+            if ('Error') in output or fCount>1:
                 #logging.error("ERROR: Failed to execute " + str(command))
                 raise Exception('Failed to execute command')
 
