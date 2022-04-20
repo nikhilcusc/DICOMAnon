@@ -68,64 +68,64 @@ if __name__ == "__main__":
             print("Input images pushed to Orthanc server")
 
     ### DICOM Query/Retrieve ###
-    patientID = 11111
+    patientID = 626457
     runStatus = connection.cGet(patientID, downloadedDicomFileDirectory)
     if runStatus == 0:
-        print('FATAL ERROR: Could not download images from the Orthanc server. One of the possible reasons could be incorrect  patientID')
+        print('FATAL ERROR: Could not download images from the Orthanc server. One of the possible reasons could be incorrect patientID.')
     else:
         print("Input images downloaded from Orthanc server and saved in "+ downloadedDicomFileDirectory)
     
-    # add dcm extension to all downloaded files
-    addDCMextension(downloadedDicomFileDirectory)
-    
-    # change inputDicomFileDirectory to just downloaded files' directory 
-    inputDicomFileDirectory = downloadedDicomFileDirectory
-    
-    anonymizer = Anonymizer()
+        # add dcm extension to all downloaded files
+        addDCMextension(downloadedDicomFileDirectory)
+        
+        # change inputDicomFileDirectory to just downloaded files' directory 
+        inputDicomFileDirectory = downloadedDicomFileDirectory
+        
+        anonymizer = Anonymizer()
 
-    # iterate over files in inputDicomFileDirectory, anonymize those files, and save them in outputDicomFileDirectory
-    for filename in os.listdir(inputDicomFileDirectory):
+        # iterate over files in inputDicomFileDirectory, anonymize those files, and save them in outputDicomFileDirectory
+        for filename in os.listdir(inputDicomFileDirectory):
 
-        # Get file paths to input and output locations
-        inputDicomFilePath = os.path.join(inputDicomFileDirectory, filename)
-        outputDicomFilePath = os.path.join(outputDicomFileDirectory, filename)
+            # Get file paths to input and output locations
+            inputDicomFilePath = os.path.join(inputDicomFileDirectory, filename)
+            outputDicomFilePath = os.path.join(outputDicomFileDirectory, filename)
 
-        # Read DICOM File (stored in anonymizer class as self.dataset)
-        anonymizer.readDicomFile(inputDicomFilePath)
+            # Read DICOM File (stored in anonymizer class as self.dataset)
+            anonymizer.readDicomFile(inputDicomFilePath)
 
-        # Remove private tags from DICOM file
-        anonymizer.removePrivateTags()
+            # Remove private tags from DICOM file
+            anonymizer.removePrivateTags()
 
-        # Remove/modify tags based on DicomTags class
-        anonymizer.anonymizeTags()
+            # Remove/modify tags based on DicomTags class
+            anonymizer.anonymizeTags()
 
-        # Save anonymized files to output location
-        anonymizer.saveAnonymizedFile(outputDicomFilePath)
+            # Save anonymized files to output location
+            anonymizer.saveAnonymizedFile(outputDicomFilePath)
 
-    print("All files in Input DICOM Directory have been anonymized")
+        print("All files in Input DICOM Directory have been anonymized")
 
-    ### Push output files to Orthanc Server ###
-    connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
+        ### Push output files to Orthanc Server ###
+        connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
-    # Check connection with Orthanc Server is secure
-    runStatus = connection.cEcho()
-    logging.debug('cEcho run status ' + str(runStatus))
-    if runStatus == 0:
-        print('FATAL ERROR: Could not connect to Orthanc server')
-    else:
-        print("Orthanc Connection is successful")
-        # Upload input DICOM files to Orthanc as point of comparison if user desires it
-        if uploadInputFiles:
-            runStatus = connection.cStore(inputDicomFileDirectory, individualFile=False)
-            if runStatus == 0:
-                print('FATAL ERROR: Could not store input images in Orthanc server')
-            else:
-                print("Input images pushed to Orthanc server")
+        # Check connection with Orthanc Server is secure
+        runStatus = connection.cEcho()
+        logging.debug('cEcho run status ' + str(runStatus))
+        if runStatus == 0:
+            print('FATAL ERROR: Could not connect to Orthanc server')
+        else:
+            print("Orthanc Connection is successful")
+            # Upload input DICOM files to Orthanc as point of comparison if user desires it
+            if uploadInputFiles:
+                runStatus = connection.cStore(inputDicomFileDirectory, individualFile=False)
+                if runStatus == 0:
+                    print('FATAL ERROR: Could not store input images in Orthanc server')
+                else:
+                    print("Input images pushed to Orthanc server")
 
-        if uploadAnonymizedFiles:
-            # Upload output anonymized DICOM files to Orthanc
-            runStatus = connection.cStore(outputDicomFileDirectory, individualFile=False)
-            if runStatus == 0:
-                print('FATAL ERROR: Could not store anonymized images in Orthanc server')
-            else:
-                print("Anonymized images pushed to Orthanc server")
+            if uploadAnonymizedFiles:
+                # Upload output anonymized DICOM files to Orthanc
+                runStatus = connection.cStore(outputDicomFileDirectory, individualFile=False)
+                if runStatus == 0:
+                    print('FATAL ERROR: Could not store anonymized images in Orthanc server')
+                else:
+                    print("Anonymized images pushed to Orthanc server")
