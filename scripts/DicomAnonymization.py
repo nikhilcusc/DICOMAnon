@@ -43,7 +43,7 @@ if __name__ == "__main__":
     inputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\InputFiles'))
     outputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\AnonymizedFiles'))
     downloadedDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\DownloadedFiles'))
-        
+
     ### Set directory path for dcmtk library ###
     dcmtkDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', r'dcmtk-3.6.6-win64-dynamic\bin'))
 
@@ -68,19 +68,19 @@ if __name__ == "__main__":
             print("Input images pushed to Orthanc server")
 
     ### DICOM Query/Retrieve ###
-    patientID = 11111
+    patientID = 111
     runStatus = connection.cGet(patientID, downloadedDicomFileDirectory)
     if runStatus == 0:
         print('FATAL ERROR: Could not download images from the Orthanc server. One of the possible reasons could be incorrect  patientID')
     else:
         print("Input images downloaded from Orthanc server and saved in "+ downloadedDicomFileDirectory)
-    
+
     # add dcm extension to all downloaded files
     addDCMextension(downloadedDicomFileDirectory)
-    
-    # change inputDicomFileDirectory to just downloaded files' directory 
+
+    # change inputDicomFileDirectory to just downloaded files' directory
     inputDicomFileDirectory = downloadedDicomFileDirectory
-    
+
     anonymizer = Anonymizer()
 
     # iterate over files in inputDicomFileDirectory, anonymize those files, and save them in outputDicomFileDirectory

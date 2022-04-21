@@ -59,7 +59,7 @@ class Dcmtk:
             commandPrompt.stdin.write(
                 "{}\n".format(" ".join(command) + "\n").encode("utf-8")
             )
-            
+
             output, unused_error = commandPrompt.communicate()
             output = str(output)
             logging.debug('\n\ncmd output is ' + output)
@@ -85,7 +85,7 @@ class Dcmtk:
 
         Parameters
         __________
-       
+
         Returns
         _______
         runStatus
@@ -135,7 +135,7 @@ class Dcmtk:
     def cGet(self, patientID, outputDir):
         """
         Sends C-GET command to retrieve file/s from PACS Server
-        
+
         Needs the following entry in the DicomModalities section of your Orthanc configuration file
         "getscu" : [ "GETSCU", "localhost", 2000 ]
         Please make sure to restart Orthanc with the updated configuration file.
@@ -149,4 +149,4 @@ class Dcmtk:
         _______
         runStatus
         """
-        return self.runByCmdExe([self.dcmtkDirectory + "\getscu", self.peer, self.port, '-aec ORTHANC', '-k "0008,0052=PATIENT"', '-k "0010,0020='+ str(patientID) + '"',  ' -v -od', outputDir + '\\'])
+        return self.runByCmdExe([self.dcmtkDirectory + "\getscu", self.peer, self.port, '-aec ORTHANC', '-k "0008,0052=PATIENT"', '-k "0010,0020='+ patientID + '"',  ' -v -od', outputDir + '\\'])
