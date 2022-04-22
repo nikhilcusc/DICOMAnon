@@ -32,7 +32,10 @@ uploadInputFiles = False
 uploadAnonymizedFiles = True
 
 inputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\InputFiles'))
+inputDicomFileDirectory = inputDicomFileDirectory.replace("\\", "/")
+
 outputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\AnonymizedFiles'))
+
 downloadedDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\DownloadedFiles'))
 
 
@@ -96,20 +99,24 @@ async def postAnonymizeData(inputDicomKey: List[UploadFile] = File(...)):
     """
     print("In Anonymizer python code")
 
-    print(inputDicomFileDirectory)
-    print(outputDicomFileDirectory)
-
     anonymizer = Anonymizer()
 
-    inputReplace = inputDicomFileDirectory.replace("\\", "/")
-    outputReplace = outputDicomFileDirectory.replace("\\", "/")
+    for f in os.listdir(inputDicomFileDirectory):
+        os.remove(os.path.join(inputDicomFileDirectory, f))
+
+    for f in os.listdir(outputDicomFileDirectory):
+        os.remove(os.path.join(outputDicomFileDirectory, f))
+
     for file in inputDicomKey:
         # inputDicomFilePath = cwd + "/ImageHeaders/InputFiles/" + file.filename
         # outputDicomFilePath = cwd + "/ImageHeaders/AnonymizedFiles/" + file.filename
-        inputDicomFilePath = inputReplace + "/" + file.filename
-        outputDicomFilePath = outputReplace + "/" + file.filename
-        print(inputDicomFilePath)
-        print(outputDicomFilePath)
+        inputDicomFilePath = inputDicomFileDirectory + "/" + file.filename
+        outputDicomFilePath = outputDicomFileDirectory + "/" + file.filename
+
+        contents = await file.read()
+        with open(inputDicomFilePath, "wb") as f:
+            f.write(contents)
+            f.close()
 
         # Read DICOM File (stored in anonymizer class as self.dataset)
         anonymizer.readDicomFile(inputDicomFilePath)
@@ -123,7 +130,7 @@ async def postAnonymizeData(inputDicomKey: List[UploadFile] = File(...)):
         # Save anonymized files to output location
         anonymizer.saveAnonymizedFile(outputDicomFilePath)
 
-        print("All files in Input DICOM Directory have been anonymized")
+    print("All files in Input DICOM Directory have been anonymized")
 
     ### Push output files to Orthanc Server ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
@@ -133,34 +140,16 @@ async def postAnonymizeData(inputDicomKey: List[UploadFile] = File(...)):
     logging.debug('cEcho run status ' + str(runStatus))
     if runStatus == 0:
         print('FATAL ERROR: Could not connect to Orthanc server')
+        return "Fail"
     else:
         # Upload output anonymized DICOM files to Orthanc
         runStatus = connection.cStore(outputDicomFileDirectory, individualFile=False)
         if runStatus == 0:
             print('FATAL ERROR: Could not store anonymized images in Orthanc server')
+            return "Fail"
         else:
             print("Anonymized images pushed to Orthanc server")
 
-
-
-
-        # inputDicomFilename = cwd + "/" + file.filename
-        # print(inputDicomFilename)
-        # file2store = await file.read()
-    # for file in inputDicomKey:
-    #     inputDicomFilename = cwd + "/" + file.filename
-    #     with open(inputDicomFilename, "wb") as f:
-    #         f.write(file.read())
-    #         f.close()
-    # return {"filenames": [file.filename for file in inputDicomKey]}
-    # test = inputDicomKey.file
-    # inputDicomFilename = cwd + "/" + inputDicomKey.filename
-
-    # with open(inputDicomFilename, "wb") as f:
-    #     f.write(file.read())
-    #     f.close()
-
-    # return {"filenames": [file.filename for file in inputDicomKey]}
     return "Done"
 
 @app.post("/query/{patientId}")
@@ -170,12 +159,17 @@ async def postQueryData(patientId: str):
     """
     print("In Query python code")
     print(patientId)
+
+    for f in os.listdir(downloadedDicomFileDirectory):
+        os.remove(os.path.join(downloadedDicomFileDirectory, f))
+
     ### Save downloaded files from Orthanc Server ###
     connection = Dcmtk(scriptDirectory, dcmtkDirectory, "localhost", "4242")
 
     runStatus = connection.cGet(patientId, downloadedDicomFileDirectory)
     if runStatus == 0:
         print('FATAL ERROR: Could not download images from the Orthanc server. One of the possible reasons could be incorrect  patientID')
+        return "Fail"
     else:
         print("Input images downloaded from Orthanc server and saved in "+ downloadedDicomFileDirectory)
 

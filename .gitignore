@@ -5,6 +5,8 @@ __pycache__/
 
 # Output Anonymized Files
 /ImageHeaders/AnonymizedFiles
+/ImageHeaders/InputFiles
+/ImageHeaders/DownloadedFiles
 
 # C extensions
 *.so
