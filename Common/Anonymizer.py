@@ -15,13 +15,14 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import os
+import re
 import sys
 
 scriptDirectory = os.path.dirname(os.path.realpath(__file__))
 parentDirectory = os.path.dirname(scriptDirectory)
 sys.path.append(parentDirectory)
 
-from pydicom import dcmread
+from pydicom import dcmread # part of DICOM_Env conda environment
 import logging
 from Common.DicomTags import DicomTags
 
@@ -30,13 +31,16 @@ class Anonymizer:
     """
     Base class for anonymization of DICOM Files
     """
-    def __init__(self):
+    def __init__(self, tagList):
 
         # Individual DICOM dataset to be anonymized
         self.dataset = None
 
         # DICOM Tag Object containing dictionary structures
         self.dicomTagObject = DicomTags()
+
+        # DICOM Tag Element Array
+        self.tagArray = tagList
 
 
     def _deleteTagCallback(self, dataset, dataElement):
@@ -48,7 +52,7 @@ class Anonymizer:
         None
         """
 
-        # Get tags that should be deleted
+        # Get entire list of tags that should be deleted
         deletedTagArray = (self.dicomTagObject.getDeleteTagArray())
 
         # Delete tags if they are in array
@@ -65,18 +69,49 @@ class Anonymizer:
         _______
         None
         """
-
-        # Get tags that need to be replaced with dummy value
-        dummyTagArray = (self.dicomTagObject.getDummyTagArray())
-
         # Replace tags if they are in array
-        if dataElement.tag in dummyTagArray:
-            logging.debug("The following tag has been replaced----> " + str(dataset[dataElement.tag]))
+        if dataElement.tag in self.tagArray:
+            print("The following tag has been replaced----> " + str(dataset[dataElement.tag]))
             # Check if tags should be replaced with an integer value or 'None' string
             if dataElement.VR in self.dicomTagObject.integerVrKeys:
                 dataElement.value = 0
             else:
                 dataElement.value = "None"
+
+
+    def addDcmextension(self, directory):
+        """
+        Function to add a .dcm extension to each file within a given directory
+
+        Parameters
+        __________
+        directory: str
+            Path to directory of DICOM images
+
+        Returns
+        _______
+        None
+        """
+
+        # Counter of how many files had .dcm extension attached
+        renameCounter = 0
+        logging.debug('Adding extension to files in ' + directory)
+
+        # Iterate through directory and append .dcm extension
+        for file in os.listdir(directory):
+            head, tail = os.path.splitext(file)
+            fileNameTail = re.search("[0-9]{5,}", tail[1:])
+            if fileNameTail == None:
+                continue
+            if fileNameTail.start() == 0:  # if the last part of file name starts with numbers
+                src = os.path.join(directory, file)
+                dst = os.path.join(directory, file + '.dcm')
+
+                if not os.path.exists(dst):  # check if the file doesn't exist
+                    os.rename(src, dst)
+                    renameCounter += 1
+
+        logging.debug('Added extension to ' + str(renameCounter) + ' files')
 
 
     def anonymizeTags(self):
@@ -87,10 +122,7 @@ class Anonymizer:
         _______
         None
         """
-
-        # Walk through DICOM dataset and delete appropriate tags
-        self.dataset.walk(self._deleteTagCallback)
-
+        print(self.tagArray)
         # Walk through DICOM dataset and set appropriate tags to dummy value
         self.dataset.walk(self._dummyTagCallback)
 

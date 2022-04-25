@@ -10,9 +10,17 @@ DICOM Anonymization API Documentation
    :maxdepth: 2
    :caption: Contents:
 
-.. image:: ProjectPipeline.png
-  :width: 400
+Medical imaging has developed into a fundamental tool for diagnostics and decision support. 
+This implies that health data is an invaluable resource that needs to be handled with precaution to ensure that all personal data 
+is protected in the course of usage and transmission. 
+The objective of this project was to develop an application that can query for, anonymize, and push DICOM images into a PACS simulator
+while maintaining the integrity of the files and the data within them.
+
+
+.. image:: UpdatedProjectPipeline.png
+  :width: 600
   :alt: DICOM Anonymization Pipeline
+  :align: center
 
 
 

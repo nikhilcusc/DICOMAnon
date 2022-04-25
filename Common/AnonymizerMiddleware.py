@@ -1,10 +1,7 @@
 import uvicorn
-from fastapi import FastAPI, Request, UploadFile, File
+from fastapi import FastAPI, Request, UploadFile, File, Body
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import Schemas
-import logging
-import asyncio
 import argparse
 import os
 import sys
@@ -19,17 +16,7 @@ dcmtkDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', r'dcmtk-3.6
 
 from Common.Anonymizer import Anonymizer
 from Common.Dcmtk import Dcmtk
-from Common.AddDcmExt import addDCMextension
 
-# Output files
-logFileName = 'anonymizer.log'
-
-# Boolean defines whether input dicom images will be uploaded
-# DEMO ONLY
-uploadInputFiles = False
-
-# Boolean defines whether anonymized dicom images will be uploaded
-uploadAnonymizedFiles = True
 
 inputDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..', 'ImageHeaders\InputFiles'))
 inputDicomFileDirectory = inputDicomFileDirectory.replace("\\", "/")
@@ -40,33 +27,19 @@ downloadedDicomFileDirectory = os.path.abspath(os.path.join(scriptDirectory, '..
 
 
 """
-Version Format: X.Y.Z
-X: Major version: Incremented whenever major changes are made like
-   architectural change.
-Y: Minor version: Incremented whenever minor changes are made which does not
-   breaks the API  (i.e. new endpoints' added, or changes in the endpoints
-   behaviour).
-Z: Patch version: Incremented with bug fixes.
+Version X.Y
+X: Major architectural change
+Y: Minor patches 
 """
-ANONYMIZER_VERSION = "0.0.1"
-
-"""
-Anonymizer Backend end Restful server and websocket.
-
-Run cmd:
-    uvicorn AnonymizerMiddleware:app --reload --port 5000
-
-Documentation:
-    http://127.0.0.1:5000/docs#/
-"""
+ANONYMIZER_VERSION = "1.0"
 
 description = """
-Anonymization Backend Server
+Anonymizer Backend end Restful server
 
-## Rest
+Can run the below command for development (automatically reloads upon save)
+uvicorn AnonymizerMiddleware:app --reload --port 5000
 
-Rest server to communicate with Anonymization framework.
-
+Documentation for back-end: http://127.0.0.1:5000/docs#/
 """
 
 app = FastAPI(
@@ -81,35 +54,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.get("/", response_model=Schemas.ServerPing)
-async def isServerRunning():
-    """
-    Simple command for externals to check if the server is running.
-    """
-    return {
-        "message": "Anonymizer server is Running",
-        "version": ANONYMIZER_VERSION,
-    }
+# Global variable for anonymizer class
+anonymizer = Anonymizer([])
 
 @app.post("/anonymize")
 async def postAnonymizeData(inputDicomKey: List[UploadFile] = File(...)):
     """
-    Copies input files to 'InputFiles' directory, anonymizes them, saves in 'AnonymizedFiles' directory, and pushes to Orthanc Server
+    Copies input files to 'InputFiles' directory, anonymizes them, saves in 'AnonymizedFiles' directory,
+    and pushes to Orthanc Server
     """
-    print("In Anonymizer python code")
-
-    anonymizer = Anonymizer()
-
     for f in os.listdir(inputDicomFileDirectory):
         os.remove(os.path.join(inputDicomFileDirectory, f))
 
     for f in os.listdir(outputDicomFileDirectory):
         os.remove(os.path.join(outputDicomFileDirectory, f))
 
+    # Iterate through every file in directory
     for file in inputDicomKey:
-        # inputDicomFilePath = cwd + "/ImageHeaders/InputFiles/" + file.filename
-        # outputDicomFilePath = cwd + "/ImageHeaders/AnonymizedFiles/" + file.filename
         inputDicomFilePath = inputDicomFileDirectory + "/" + file.filename
         outputDicomFilePath = outputDicomFileDirectory + "/" + file.filename
 
@@ -152,13 +113,21 @@ async def postAnonymizeData(inputDicomKey: List[UploadFile] = File(...)):
 
     return "Done"
 
+@app.post("/updateAnonymizationTable")
+async def updateAnonymizationTable(payload: dict=Body(...)):
+    """
+    Updates anonymizer's local array of group element tags
+    """
+    anonymizer.tagArray.clear()
+    rawArray = payload.get('anonymizationArray')
+    anonymizer.tagArray = rawArray
+    return "Done"
+
 @app.post("/query/{patientId}")
 async def postQueryData(patientId: str):
     """
-    Simple command to post query data
+    Post Query/Receive G-GET command to Orthanc server based on patientId
     """
-    print("In Query python code")
-    print(patientId)
 
     for f in os.listdir(downloadedDicomFileDirectory):
         os.remove(os.path.join(downloadedDicomFileDirectory, f))
@@ -174,7 +143,8 @@ async def postQueryData(patientId: str):
         print("Input images downloaded from Orthanc server and saved in "+ downloadedDicomFileDirectory)
 
     # add dcm extension to all downloaded files
-    addDCMextension(downloadedDicomFileDirectory)
+    anonymizer.addDcmextension(downloadedDicomFileDirectory)
+
     return "Done"
 
 if __name__ == "__main__":

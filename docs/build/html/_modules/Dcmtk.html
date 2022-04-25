@@ -62,6 +62,9 @@
 <dt id="Dcmtk.Dcmtk.cGet">
 <code class="sig-name descname">cGet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patientID</span></em>, <em class="sig-param"><span class="n">outputDir</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Dcmtk.Dcmtk.cGet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends C-GET command to retrieve file/s from PACS Server</p>
+<p>Needs the following entry in the DicomModalities section of your Orthanc configuration file
+“getscu” : [ “GETSCU”, “localhost”, 2000 ]
+Please make sure to restart Orthanc with the updated configuration file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>outputDir</strong> (<em>string</em>) – Path to location where DICOM files are to be downloaded</p>

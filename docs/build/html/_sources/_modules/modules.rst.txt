@@ -7,3 +7,4 @@ Common
    Anonymizer
    Dcmtk
    DicomTags
+   AnonymizerMiddleware

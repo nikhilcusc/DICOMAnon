@@ -41,7 +41,7 @@
 <span id="anonymizer-module"></span><h1>Anonymizer module<a class="headerlink" href="#module-Anonymizer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="Anonymizer.Anonymizer">
-<em class="property">class </em><code class="sig-prename descclassname">Anonymizer.</code><code class="sig-name descname">Anonymizer</code><a class="headerlink" href="#Anonymizer.Anonymizer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">Anonymizer.</code><code class="sig-name descname">Anonymizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tagList</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Anonymizer.Anonymizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base class for anonymization of DICOM Files</p>
 <dl class="py method">
@@ -68,6 +68,23 @@
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="Anonymizer.Anonymizer.addDcmextension">
+<code class="sig-name descname">addDcmextension</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">directory</span></em><span class="sig-paren">)</span><a class="headerlink" href="#Anonymizer.Anonymizer.addDcmextension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to add a .dcm extension to each file within a given directory</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Path to directory of DICOM images</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
