@@ -15,6 +15,7 @@ import sys
 import subprocess
 
 sys.path.insert(0, os.path.abspath('../../Common'))
+sys.path.insert(0, os.path.abspath('../../scripts'))
 
 
 # -- Project information -----------------------------------------------------

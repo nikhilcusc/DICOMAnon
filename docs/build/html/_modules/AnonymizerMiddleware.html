@@ -41,7 +41,7 @@
 <span id="anonymizermiddleware-module"></span><h1>AnonymizerMiddleware module<a class="headerlink" href="#module-AnonymizerMiddleware" title="Permalink to this headline">¶</a></h1>
 <dl class="py data">
 <dt id="AnonymizerMiddleware.downloadedDicomFileDirectory">
-<code class="sig-prename descclassname">AnonymizerMiddleware.</code><code class="sig-name descname">downloadedDicomFileDirectory</code><em class="property"> = 'C:\\Users\\Adarsh\\Documents\\USC\\BME528\\FinalProject\\DICOMAnon\\ImageHeaders\\DownloadedFiles'</em><a class="headerlink" href="#AnonymizerMiddleware.downloadedDicomFileDirectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">AnonymizerMiddleware.</code><code class="sig-name descname">downloadedDicomFileDirectory</code><em class="property"> = 'C:\\Users\\Adarsh\\Documents\\USC\\BME528\\FinalProject\\DICOMAnon\\ImageHeaders\\Temporary\\DownloadedFiles'</em><a class="headerlink" href="#AnonymizerMiddleware.downloadedDicomFileDirectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Version X.Y
 X: Major architectural change
 Y: Minor patches</p>
@@ -52,18 +52,51 @@ Y: Minor patches</p>
 <em class="property">async </em><code class="sig-prename descclassname">AnonymizerMiddleware.</code><code class="sig-name descname">postAnonymizeData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputDicomKey</span><span class="p">:</span> <span class="n">List<span class="p">[</span>fastapi.datastructures.UploadFile<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">File(Ellipsis)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnonymizerMiddleware.postAnonymizeData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copies input files to ‘InputFiles’ directory, anonymizes them, saves in ‘AnonymizedFiles’ directory,
 and pushes to Orthanc Server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputDicomKey</strong> (<em>file object array</em>) – Array of file objects to anonymize</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>“Done” if success”. “Fail” otherwise</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="AnonymizerMiddleware.postQueryData">
 <em class="property">async </em><code class="sig-prename descclassname">AnonymizerMiddleware.</code><code class="sig-name descname">postQueryData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">patientId</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnonymizerMiddleware.postQueryData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Post Query/Receive G-GET command to Orthanc server based on patientId</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>patientId</strong> (<em>str</em>) – Patient ID that must be query/retrieved</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>“Done” if success”. “Fail” otherwise</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="AnonymizerMiddleware.updateAnonymizationTable">
 <em class="property">async </em><code class="sig-prename descclassname">AnonymizerMiddleware.</code><code class="sig-name descname">updateAnonymizationTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">payload</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">Body(Ellipsis)</span></em><span class="sig-paren">)</span><a class="headerlink" href="#AnonymizerMiddleware.updateAnonymizationTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates anonymizer’s local array of group element tags</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>payload</strong> (<em>two-dimensional array</em>) – Array of DICOM tags (group, element array) to anonymize</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>“Done” if success”</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

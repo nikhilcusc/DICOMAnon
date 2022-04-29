@@ -38,10 +38,10 @@
 
       <v-col class="mb-1" cols="12">
         <v-img
-          :src="require('../assets/UpdatedProjectPipeline.png')"
+          :src="require('../assets/FullProjectPipeline.png')"
           class="my-3"
           contain
-          height="200"
+          height="280"
         />
       </v-col>
     </v-row>
@@ -58,7 +58,7 @@
         and try again!
       </v-alert>
       <v-alert type="success" v-model="success_queryAlert" dark dismissible>
-        Query/Retrieve was successful! Please check the "ImageHeaders/DownloadedFiles" directory to view your files
+        Query/Retrieve was successful! Please check the DownloadedFiles directory to view your files
       </v-alert>
       <v-card-title>
         <h1 class="display-1">Query/Retrieve DICOM Files</h1>
