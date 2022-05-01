@@ -71,7 +71,7 @@ class Anonymizer:
         """
         # Replace tags if they are in array
         if dataElement.tag in self.tagArray:
-            print("The following tag has been replaced----> " + str(dataset[dataElement.tag]))
+            logging.debug("The following tag has been replaced----> " + str(dataset[dataElement.tag]))
             # Check if tags should be replaced with an integer value or 'None' string
             if dataElement.VR in self.dicomTagObject.integerVrKeys:
                 dataElement.value = 0
@@ -122,7 +122,6 @@ class Anonymizer:
         _______
         None
         """
-        print(self.tagArray)
         # Walk through DICOM dataset and set appropriate tags to dummy value
         self.dataset.walk(self._dummyTagCallback)
 

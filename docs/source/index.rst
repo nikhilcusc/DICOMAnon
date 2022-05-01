@@ -17,7 +17,7 @@ The objective of this project was to develop an application that can query for, 
 while maintaining the integrity of the files and the data within them.
 
 
-.. image:: UpdatedProjectPipeline.png
+.. image:: FullProjectPipeline.png
   :width: 600
   :alt: DICOM Anonymization Pipeline
   :align: center

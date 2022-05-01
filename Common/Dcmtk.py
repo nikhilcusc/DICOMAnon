@@ -48,7 +48,7 @@ class Dcmtk:
         _______
         runStatus
         """
-        runStatus=1
+        runStatus = 1
         try:
             commandPrompt = subprocess.Popen(
                 "cmd.exe", stdin=subprocess.PIPE, bufsize=0,
