@@ -9,22 +9,22 @@ USER INSTRUCTIONS FOR STANDALONE APPLICATION
 2) Add 'aec' as a client server of Orthanc
     -   Find the following block of code (line 311 of Orthanc Configuration file)
     
-           // The list of the known DICOM modalities. This option is ignored if
-           // "DicomModalitiesInDatabase" is set to "true", in which case you
-           // must use the REST API to define modalities.
-           "DicomModalities" : {
-             /**
-              * Uncommenting the following line would enable Orthanc to
+           // The list of the known DICOM modalities. This option is ignored if \
+           // "DicomModalitiesInDatabase" is set to "true", in which case you \
+           // must use the REST API to define modalities. \
+           "DicomModalities" : { \
+             /** \
+              * Uncommenting the following line would enable Orthanc to \
      
     -   Add the following line to the DicomModalities array so it becomes
     
-           // The list of the known DICOM modalities. This option is ignored if
-           // "DicomModalitiesInDatabase" is set to "true", in which case you
-           // must use the REST API to define modalities.
-           "DicomModalities" : {
-             "aec": [ "GETSCU", "localhost", 2000 ],
-             /**
-              * Uncommenting the following line would enable Orthanc to
+           // The list of the known DICOM modalities. This option is ignored if \
+           // "DicomModalitiesInDatabase" is set to "true", in which case you \
+           // must use the REST API to define modalities. \
+           "DicomModalities" : { \
+             "aec": [ "GETSCU", "localhost", 2000 ], \
+             /** \
+              * Uncommenting the following line would enable Orthanc to \
 
 2) Clone 'DICOMAnon' github repository from https://github.com/nikhilcusc/DICOMAnon
 
@@ -33,8 +33,8 @@ USER INSTRUCTIONS FOR STANDALONE APPLICATION
 4) Run 'AnonymizationApplication/Anonymizer.bat'
 
 5) Temporary files hold anonymized and query/retrieved DICOM images
-    a) Query/Retrieved Files: AnonymizationApplication\exe.win-amd64-3.7\ImageHeaders\Temporary\DownloadedFiles
-    b) Anonymized Files: AnonymizationApplication\exe.win-amd64-3.7\ImageHeaders\Temporary\AnonymizedFiles
+    - Query/Retrieved Files: AnonymizationApplication\exe.win-amd64-3.7\ImageHeaders\Temporary\DownloadedFiles
+    - Anonymized Files: AnonymizationApplication\exe.win-amd64-3.7\ImageHeaders\Temporary\AnonymizedFiles
 
 
 
@@ -44,8 +44,8 @@ DEVELOPER INFORMATION
 To run the UI as a developer, one can either use thes provided .bat file or do it entirely manually
 
 Regardless of method, Temporary files hold anonymized and query/retrieved DICOM images
-Query/Retrieved Files placed at: DICOMAnon\ImageHeaders\Temporary\DownloadedFiles
-Anonymized Files placed at: DICOMAnon\ImageHeaders\Temporary\AnonymizedFiles
+    - Query/Retrieved Files placed at: DICOMAnon\ImageHeaders\Temporary\DownloadedFiles
+    - Anonymized Files placed at: DICOMAnon\ImageHeaders\Temporary\AnonymizedFiles
 
 .BAT FILE METHOD
 
