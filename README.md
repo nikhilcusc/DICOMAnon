@@ -3,11 +3,11 @@
 USER INSTRUCTIONS FOR STANDALONE APPLICATION
 --------------------------------------------
 1) Install Orthanc PACS Simulator
-    a) Instructions: https://www.orthanc-server.com/resources/2015-02-09-emsy-tutorial/index.html
-    b) Configuration file will be located at 'C:\Program Files\Orthanc Server\Configuration\orthanc.json'
+    - Instructions: https://www.orthanc-server.com/resources/2015-02-09-emsy-tutorial/index.html
+    - Configuration file will be located at 'C:\Program Files\Orthanc Server\Configuration\orthanc.json'
     
 2) Add 'aec' as a client server of Orthanc
-    a)   Find the following block of code (line 311 of Orthanc Configuration file)
+    -   Find the following block of code (line 311 of Orthanc Configuration file)
     
            // The list of the known DICOM modalities. This option is ignored if
            // "DicomModalitiesInDatabase" is set to "true", in which case you
@@ -16,7 +16,7 @@ USER INSTRUCTIONS FOR STANDALONE APPLICATION
              /**
               * Uncommenting the following line would enable Orthanc to
      
-    b)   Add the following line to the DicomModalities array so it becomes
+    -   Add the following line to the DicomModalities array so it becomes
     
            // The list of the known DICOM modalities. This option is ignored if
            // "DicomModalitiesInDatabase" is set to "true", in which case you
@@ -54,9 +54,9 @@ Anonymized Files placed at: DICOMAnon\ImageHeaders\Temporary\AnonymizedFiles
 2) Install miniconda3 from https://docs.conda.io/en/latest/miniconda.html
 
 3) Open miniconda3 command prompt
-    a) Change directory to 'DICOMAnon/_venvs' folder
-    b) Type 'conda env create --file DICOM_Env.yml' and press enter
-    c) Type 'conda activate DICOM_Env'
+    - Change directory to 'DICOMAnon/_venvs' folder
+    = Type 'conda env create --file DICOM_Env.yml' and press enter
+    - Type 'conda activate DICOM_Env'
 
 4) Download node.js from https://nodejs.org/en/download/
 
@@ -81,9 +81,9 @@ MANUAL METHOD FOR BACK-END
 
 To run back-end as developer, do the following:
 1) Open miniconda3 command prompt
-    a) Change directory to 'DICOMAnon/scripts' folder
-    b) Type 'conda activate DICOM_Env' and press enter (assumes .bat file method has been completed)
-    c) Type 'uvicorn AnonymizerMiddleware:app --reload --port 5000' and press enter
+    - Change directory to 'DICOMAnon/scripts' folder
+    - Type 'conda activate DICOM_Env' and press enter (assumes .bat file method has been completed)
+    - Type 'uvicorn AnonymizerMiddleware:app --reload --port 5000' and press enter
 2) Back end will be hosted at http://127.0.0.1:5000/
 3) Documentation of API and back-end hosted at http://127.0.0.1:5000/docs
 
