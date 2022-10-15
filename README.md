@@ -1,6 +1,6 @@
 # DICOMAnon
 
-USER INSTRUCTIONS FOR STANDALONE APPLICATION
+### User instruction for standalone application
 --------------------------------------------
 1) Install Orthanc PACS Simulator
     - Instructions: https://www.orthanc-server.com/resources/2015-02-09-emsy-tutorial/index.html
@@ -30,15 +30,17 @@ USER INSTRUCTIONS FOR STANDALONE APPLICATION
 
 3) Extract 'DICOM_Anon/AnonymizationApplication/AnonymizationApplication.zip' to your local machine
 
-4) Run 'AnonymizationApplication/Anonymizer.bat'
+4) Open AnonymizationApplication/Anonymizer.bat in a text editor application (like Notepad). Please change ***pathToProject*** and ***pathToMiniconda*** variables for your local machine  
 
-5) Temporary files hold anonymized and query/retrieved DICOM images
+5) Run 'AnonymizationApplication/Anonymizer.bat'
+
+6) Temporary files hold anonymized and query/retrieved DICOM images
     - Query/Retrieved Files: AnonymizationApplication\exe.win-amd64-3.7\ImageHeaders\Temporary\DownloadedFiles
     - Anonymized Files: AnonymizationApplication\exe.win-amd64-3.7\ImageHeaders\Temporary\AnonymizedFiles
 
 
 
-DEVELOPER INFORMATION
+### Developer information
 ---------------------
 
 To run the UI as a developer, one can either use thes provided .bat file or do it entirely manually
@@ -47,7 +49,7 @@ Regardless of method, Temporary files hold anonymized and query/retrieved DICOM 
     - Query/Retrieved Files placed at: DICOMAnon\ImageHeaders\Temporary\DownloadedFiles
     - Anonymized Files placed at: DICOMAnon\ImageHeaders\Temporary\AnonymizedFiles
 
-.BAT FILE METHOD
+###### .BAT file method
 
 1) Clone 'DICOMAnon' github repository from https://github.com/nikhilcusc/DICOMAnon
 
@@ -70,14 +72,14 @@ Regardless of method, Temporary files hold anonymized and query/retrieved DICOM 
 
 
 
-MANUAL METHOD FOR FRONT-END
+###### Manual method for Front-end
 
 To run front-end as developer, do the following (assumes .bat file method has been completed)
 1) Change directory to 'DICOMAnon/AnonymizationApplication'
 2) Type 'npm run serve' and press enter
 3) Front-end will be hosted at http://localhost:8080/
 
-MANUAL METHOD FOR BACK-END
+##### Manual method for Back-end
 
 To run back-end as developer, do the following:
 1) Open miniconda3 command prompt
@@ -89,17 +91,17 @@ To run back-end as developer, do the following:
 
 
 
-BUILD INFORMATION
+### Build information
 ---------------------
 
-FRONT-END
+##### Front-end
 
 To create build version of front-end, do the following (assumes .BAT FILE METHOD section completed):
 1) Change directory to 'DICOMAnon/AnonymizationApplication'
 2) Type 'npm run electron:build' and press enter
 3) Run 'DICOMAnon/AnonymizationApplication/dist_electron/win-unpacked/vue-electron-app.exe' to launch front-end
 
-BACK-END
+##### Back-end
 
 To create build version of back-end, do the following (assumes .BAT FILE METHOD section completed):
 1) Change directory to 'DICOMAnon/scripts'
